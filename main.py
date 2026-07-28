@@ -2,14 +2,13 @@ import os
 import sqlite3
 import telebot
 
-# Берущий токен исключительно из переменных окружения Railway
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 if not BOT_TOKEN:
     raise ValueError("Не задан TELEGRAM_TOKEN в переменных окружения!")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-OWNER_ID = 6469907589  # Замени на свой реальный ID
+OWNER_ID = 6469907589  # Твой реальный ID
 
 def init_db():
     conn = sqlite3.connect("countries.db", check_same_thread=False)
@@ -48,37 +47,22 @@ def init_db():
 
     conn.close()
 
-def is_owner_chat(m):
-    if m.chat.type == "private":
-        return m.from_user.id == OWNER_ID
-    else:
-        try:
-            chat_member = bot.get_chat_member(m.chat.id, OWNER_ID)
-            if chat_member.status in ["creator", "administrator"]:
-                return True
-        except Exception:
-            pass
-        return False
-
 @bot.message_handler(commands=["start"])
 def start(m):
-    if not is_owner_chat(m):
-        return
     bot.reply_to(
         m,
         "🌍 **Симулятор геополитики (Gruppas Edition)**\n\n"
+        "Создай собственную страну и приведи её к победе!\n"
         "Команды:\n"
-        "• `/create [название]` — создать свою страну (с фото флага)\n"
+        "• `/create [название]` — создать страну (отправь вместе с фото флага)\n"
         "• `/profile` — посмотреть показатели своей страны",
         parse_mode="Markdown"
     )
 
 @bot.message_handler(commands=["create"])
 def create_country(m):
-    if not is_owner_chat(m):
-        return
-
     user_id = m.from_user.id
+    
     if user_id == OWNER_ID:
         bot.reply_to(m, "⚠️ У тебя уже установлена священная империя **Группас** по дефолту!", parse_mode="Markdown")
         return
@@ -127,9 +111,6 @@ def create_country(m):
 
 @bot.message_handler(commands=["profile"])
 def profile(m):
-    if not is_owner_chat(m):
-        return
-
     user_id = m.from_user.id
     conn = sqlite3.connect("countries.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -138,7 +119,7 @@ def profile(m):
     conn.close()
 
     if not row:
-        bot.reply_to(m, "⚠️ У тебя еще нет страны. Создай её с помощью `/create [Название]`.", parse_mode="Markdown")
+        bot.reply_to(m, "⚠️ У тебя еще нет страны. Создай её с помощью `/create [Название]` (прикрепи фото флага).", parse_mode="Markdown")
         return
 
     name, flag_id, territory, money, resources, tanks = row
