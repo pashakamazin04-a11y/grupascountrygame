@@ -9,7 +9,7 @@ if not BOT_TOKEN:
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-OWNER_ID = 123456789  # Замени на свой реальный ID
+OWNER_ID = 6469907589  # Замени на свой реальный ID
 
 def init_db():
     conn = sqlite3.connect("countries.db", check_same_thread=False)
