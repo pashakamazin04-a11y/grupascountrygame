@@ -8,7 +8,7 @@ if not BOT_TOKEN:
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-OWNER_ID = 6469907589  # Твой реальный ID
+OWNER_ID = 6469907589
 
 def init_db():
     conn = sqlite3.connect("countries.db", check_same_thread=False)
@@ -33,7 +33,6 @@ def init_db():
     """)
     conn.commit()
 
-    # Дефолтная страна "Группас" для владельца (OWNER_ID)
     russia_base_territory = 17125191
     gruppas_territory = russia_base_territory * 3
 
